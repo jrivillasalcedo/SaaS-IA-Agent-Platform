@@ -23,7 +23,6 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
-
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, { message: "Password is required" }),
@@ -52,7 +51,7 @@ export const SignInView = () => {
       {
         onSuccess: () => {
           setPending(false);
-           router.push("/");
+          router.push("/");
         },
         onError: ({ error }) => {
           setPending(false);
@@ -65,7 +64,9 @@ export const SignInView = () => {
   const onSocial = (provider: "google" | "github") => {
     setError(null);
     setPending(true);
-    authClient.signIn.social({ provider, callbackURL: "/" }, {
+    authClient.signIn.social(
+      { provider, callbackURL: "/" },
+      {
         onSuccess: () => {
           setPending(false);
         },
@@ -149,7 +150,7 @@ export const SignInView = () => {
                     type="button"
                     className="w-full"
                   >
-                    <FaGoogle  />
+                    <FaGoogle />
                   </Button>
                   <Button
                     disabled={pending}
@@ -158,7 +159,7 @@ export const SignInView = () => {
                     type="button"
                     className="w-full"
                   >
-                    <FaGithub  />
+                    <FaGithub />
                   </Button>
                 </div>
                 <div className="text-center text-sm">
@@ -174,7 +175,7 @@ export const SignInView = () => {
             </form>
           </Form>
 
-          <div className="bg-radial from-green-700 to-green-900 relative hidden md:flex flex-col gap-y-4 items-center justify-center">
+          <div className="bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col gap-y-4 items-center justify-center">
             <img src="/logo.svg" alt="Image" className="h-[92px] w-[92px]" />
             <p className="text-2xl font-semibold text-white">Meet.AI</p>
           </div>
