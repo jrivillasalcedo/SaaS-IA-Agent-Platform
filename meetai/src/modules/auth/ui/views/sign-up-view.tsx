@@ -17,9 +17,10 @@ import { Alert, AlertTitle } from "@/components/ui/alert";
 import { OctagonAlertIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 const formSchema = z
   .object({
@@ -33,9 +34,9 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 export const SignUnView = () => {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,6 +55,7 @@ export const SignUnView = () => {
         name: data.name,
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
@@ -66,6 +68,19 @@ export const SignUnView = () => {
         },
       }
     );
+  };
+  const onSocial = (provider: "google" | "github") => {
+    setError(null);
+    setPending(true);
+    authClient.signIn.social({ provider, callbackURL: "/" }, {
+      onSuccess: () => {
+        setPending(false);
+      },
+      onError: ({ error }) => {
+        setPending(false);
+        setError(error.message);
+      },
+    });
   };
   return (
     <div className="flex flex-col gap-6">
@@ -174,18 +189,20 @@ export const SignUnView = () => {
                   <Button
                     disabled={pending}
                     variant="outline"
+                    onClick={() => onSocial("google")}
                     type="button"
                     className="w-full"
                   >
-                    Google
+                    <FaGoogle />
                   </Button>
                   <Button
                     disabled={pending}
                     variant="outline"
+                    onClick={() => onSocial("github")}
                     type="button"
                     className="w-full"
                   >
-                    GitHub
+                    <FaGithub />
                   </Button>
                 </div>
                 <div className="text-center text-sm">

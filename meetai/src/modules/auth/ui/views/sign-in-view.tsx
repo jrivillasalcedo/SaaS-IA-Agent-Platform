@@ -17,10 +17,12 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { OctagonAlertIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -45,11 +47,27 @@ export const SignInView = () => {
       {
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
           setPending(false);
-          router.push("/");
+           router.push("/");
+        },
+        onError: ({ error }) => {
+          setPending(false);
+          setError(error.message);
+        },
+      }
+    );
+  };
+
+  const onSocial = (provider: "google" | "github") => {
+    setError(null);
+    setPending(true);
+    authClient.signIn.social({ provider, callbackURL: "/" }, {
+        onSuccess: () => {
+          setPending(false);
         },
         onError: ({ error }) => {
           setPending(false);
@@ -127,18 +145,20 @@ export const SignInView = () => {
                   <Button
                     disabled={pending}
                     variant="outline"
+                    onClick={() => onSocial("google")}
                     type="button"
                     className="w-full"
                   >
-                    Google
+                    <FaGoogle  />
                   </Button>
                   <Button
                     disabled={pending}
+                    onClick={() => onSocial("github")}
                     variant="outline"
                     type="button"
                     className="w-full"
                   >
-                    GitHub
+                    <FaGithub  />
                   </Button>
                 </div>
                 <div className="text-center text-sm">
